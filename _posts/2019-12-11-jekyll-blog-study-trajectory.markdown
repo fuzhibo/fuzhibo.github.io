@@ -2,7 +2,7 @@
 layout: post
 title:  "使用 jekyll 构建 github pages 的学习笔记整理"
 date:   2019-12-11 16:19:29 +0800
-categories: jekyll
+categories: jekyll,frontend
 ---
 &emsp;&emsp;这里只是将自己使用 Jekyll 构建 github pages 的过程整理一下。  
 
