@@ -381,8 +381,32 @@ if __name__ == '__main__':
 
 {% mermaid %}
 graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
+    A[Begin]-->B[Recovery Crond Job];
+    subgraph main_thread;
+        B-->C[Start Crond main Thread];
+        C-->D[Wait Crond restart event];
+        D--restart event-->E[Stop Crond main Thread];
+        E-->C;
+    end;
+    subgraph crond_thread;
+        C-->F[Start Watcher];
+        F-->G[Start Scheduler];
+        G-->H[Remove all jobs of Scheduler];
+        H-->I{Check job queue if empty};
+        I--not empty-->J[Get new job];
+        J-->K[Add new job to Scheduler];
+        I--empty-->K{Wait Crond restart event};
+        K--restart event-->L[Quit];
+        K--timeout-->I;
+        L--stopped-->E;
+    end;
+    subgraph watcher_thread;
+        F-->M[crontab file modified notify];
+        M-->N[send new to job queue];
+        N-->O[send restart event];
+        O--send restart event-->D;
+    end;
+    subgraph scheduler_thread;
+        F-->P[Trigger job];
+    end;
 {% endmermaid %}
