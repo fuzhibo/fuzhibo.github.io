@@ -378,10 +378,11 @@ if __name__ == '__main__':
     crond.start()
 ```
 &emsp;&emsp;流程图如下：
-```mermaid
+
+{% mermaid %}
 graph TD;
     A-->B;
     A-->C;
     B-->D;
     C-->D;
-```
+{% endmermaid %}
