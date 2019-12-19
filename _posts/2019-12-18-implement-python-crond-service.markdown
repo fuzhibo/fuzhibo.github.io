@@ -377,7 +377,8 @@ if __name__ == '__main__':
     crond = CrondService("crond-service")
     crond.start()
 ```
-&emsp;&emsp;简单的描述一下这个小模块的工作流程：  
+&emsp;&emsp;流程图如下：
+
 {% mermaid %}
 graph TD;
     A-->B;
@@ -385,4 +386,3 @@ graph TD;
     B-->D;
     C-->D;
 {% endmermaid %}
-<script>mermaid.initialize({startOnLoad:true});</script>
