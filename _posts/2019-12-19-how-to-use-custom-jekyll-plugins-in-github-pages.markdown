@@ -45,7 +45,7 @@ graph TD;
            A-->C;
            B-->D;
            C-->D;
-    ```
+      ```
 ```
 &emsp;&emsp;要实现这样的小目标，就得从自己开发一个 `jekyll plugins` 开始。先将 `jekyll-mermaid` 插件的基本功能放到自己的新插件中实现，再逐步的完善达到最终想要的结果。  
 &emsp;  
