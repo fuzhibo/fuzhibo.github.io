@@ -174,6 +174,6 @@ suite('Requests Class Test Suite', () => {
 });
 ```
 #### 总结
-&emsp;&emsp;这一阶段的代码可以看[这里](https://github.com/fuzhibo/gitlab-devops-management/tree/lession1)。这个阶段，已经完成了 vs code extension 本身的搭建和对接 GitLab API 的初步实现。那么下一阶段，需要完成的任务有：
+&emsp;&emsp;这一阶段的代码可以看[这里](https://github.com/fuzhibo/gitlab-devops-management/tree/lesson1)。这个阶段，已经完成了 vs code extension 本身的搭建和对接 GitLab API 的初步实现。那么下一阶段，需要完成的任务有：
 * 在 vs code 的左侧边栏上增加一个属于这个插件自己的 Logo，当用户点击这个 Logo 的时候进行 GitLab 的初始化校验并弹出一个工作面板。
 * 对这个 Token 所能够显示的 Group 和 Project 用 Tree List 空间进行展示（最好和 vs code 风格统一），并标明权限。
