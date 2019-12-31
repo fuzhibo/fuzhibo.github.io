@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>IT 设施基础工具系列 1 —— Salt Stack 的介绍 | A tossing programmer</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="IT 设施基础工具系列 1 —— Salt Stack 的介绍" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="  IT 基础设施的建设中，管理工具是非常重要的一环。而针对裸金属设施来说，最常用的管理工具之一莫过于 Salt Stack。 什么是 Salt Stack   Salt Stack 是一个配置管理和编排工具。它使用一个中心化的仓库来提供新的服务器和其它 IT 基础设施以及自动化重复的系统管理工作和代码部署任务。     Salt Stack 的核心组件，是一个远程执行引擎，创建一个安全的、双向的以及高速的通信网络。当一个 master 运行的时候，一个启动的 minion 会创建加密哈希并且连接到 master。再使用公钥认证后，minion 可从 master 接收命令。Salt 也可以运行在一个无 master 的 minion 模式。 为什么是 Salt Stack   Salt Stack 可被用于 DevOps 组织，使用它从中心代码仓库拉取开发者代码和配置信息，然后推送这些内容到远程服务器。Salt 的用户也可以二次开发 Salt Stack 同时也能够下载到其它用户已经贡献到公共仓库的 prebuilt configurations。     Salt Stack 区别于其它的配置管理和自动化工具的一点就是速度（官方自己的宣传）。它使用多线程的设计架构，能同时执行成千上百个任务。在分布式集群通信上使用 ZeroMQ 消息中间件，有效的解耦的了网络连接，意味着整个系统的运转不要求持久化的连接。     Salt Stack 使用 slave-master 架构，并且在里面实现了推和拉的操作。这是一个基于消息驱动的架构，同时带有自愈的特性。当然，Salt 也可以工作在 agent-based 或者 agentless 模式。     Salt Stack 由 4 个部分组成： reactors —— 监听 events，当 agent 使用一个安全 shell 来执行命令到一个目标系统。 minion —— 这个就是 agent，能够可选的安装在目标并使用 python 来推送命令。 grains —— 提供关于目标系统的信息到 minon。 pillars —— 配置文件。     Salt 使用 Jinja2 模板引擎来插入条件语句和实现其它设置在 Salt state 和 pillar 文件中。 如何使用 Salt Stack   Salt Stack 分为开源和企业版。企业版包括一个 GUI 并提供一个轻量的目录访问协议（访问控制）。企业版的 API 比开源版本的 API 拥有更多的特性。同时，企业版也增强了合规性检测能力，包括存储事件到数据库来提供一个审计日志。     如果是开源版本，主要是使用命令行来进行相关的操作。" />
+<meta property="og:description" content="  IT 基础设施的建设中，管理工具是非常重要的一环。而针对裸金属设施来说，最常用的管理工具之一莫过于 Salt Stack。 什么是 Salt Stack   Salt Stack 是一个配置管理和编排工具。它使用一个中心化的仓库来提供新的服务器和其它 IT 基础设施以及自动化重复的系统管理工作和代码部署任务。     Salt Stack 的核心组件，是一个远程执行引擎，创建一个安全的、双向的以及高速的通信网络。当一个 master 运行的时候，一个启动的 minion 会创建加密哈希并且连接到 master。再使用公钥认证后，minion 可从 master 接收命令。Salt 也可以运行在一个无 master 的 minion 模式。 为什么是 Salt Stack   Salt Stack 可被用于 DevOps 组织，使用它从中心代码仓库拉取开发者代码和配置信息，然后推送这些内容到远程服务器。Salt 的用户也可以二次开发 Salt Stack 同时也能够下载到其它用户已经贡献到公共仓库的 prebuilt configurations。     Salt Stack 区别于其它的配置管理和自动化工具的一点就是速度（官方自己的宣传）。它使用多线程的设计架构，能同时执行成千上百个任务。在分布式集群通信上使用 ZeroMQ 消息中间件，有效的解耦的了网络连接，意味着整个系统的运转不要求持久化的连接。     Salt Stack 使用 slave-master 架构，并且在里面实现了推和拉的操作。这是一个基于消息驱动的架构，同时带有自愈的特性。当然，Salt 也可以工作在 agent-based 或者 agentless 模式。     Salt Stack 由 4 个部分组成： reactors —— 监听 events，当 agent 使用一个安全 shell 来执行命令到一个目标系统。 minion —— 这个就是 agent，能够可选的安装在目标并使用 python 来推送命令。 grains —— 提供关于目标系统的信息到 minon。 pillars —— 配置文件。     Salt 使用 Jinja2 模板引擎来插入条件语句和实现其它设置在 Salt state 和 pillar 文件中。 如何使用 Salt Stack   Salt Stack 分为开源和企业版。企业版包括一个 GUI 并提供一个轻量的目录访问协议（访问控制）。企业版的 API 比开源版本的 API 拥有更多的特性。同时，企业版也增强了合规性检测能力，包括存储事件到数据库来提供一个审计日志。     如果是开源版本，主要是使用命令行来进行相关的操作。" />
+<link rel="canonical" href="https://fuzhibo.site/salt/stack,python,it/infrastructure/2019/12/20/what-is-salt-stack.html" />
+<meta property="og:url" content="https://fuzhibo.site/salt/stack,python,it/infrastructure/2019/12/20/what-is-salt-stack.html" />
+<meta property="og:site_name" content="A tossing programmer" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-12-20T10:40:29+08:00" />
+<script type="application/ld+json">
+{"description":"  IT 基础设施的建设中，管理工具是非常重要的一环。而针对裸金属设施来说，最常用的管理工具之一莫过于 Salt Stack。 什么是 Salt Stack   Salt Stack 是一个配置管理和编排工具。它使用一个中心化的仓库来提供新的服务器和其它 IT 基础设施以及自动化重复的系统管理工作和代码部署任务。     Salt Stack 的核心组件，是一个远程执行引擎，创建一个安全的、双向的以及高速的通信网络。当一个 master 运行的时候，一个启动的 minion 会创建加密哈希并且连接到 master。再使用公钥认证后，minion 可从 master 接收命令。Salt 也可以运行在一个无 master 的 minion 模式。 为什么是 Salt Stack   Salt Stack 可被用于 DevOps 组织，使用它从中心代码仓库拉取开发者代码和配置信息，然后推送这些内容到远程服务器。Salt 的用户也可以二次开发 Salt Stack 同时也能够下载到其它用户已经贡献到公共仓库的 prebuilt configurations。     Salt Stack 区别于其它的配置管理和自动化工具的一点就是速度（官方自己的宣传）。它使用多线程的设计架构，能同时执行成千上百个任务。在分布式集群通信上使用 ZeroMQ 消息中间件，有效的解耦的了网络连接，意味着整个系统的运转不要求持久化的连接。     Salt Stack 使用 slave-master 架构，并且在里面实现了推和拉的操作。这是一个基于消息驱动的架构，同时带有自愈的特性。当然，Salt 也可以工作在 agent-based 或者 agentless 模式。     Salt Stack 由 4 个部分组成： reactors —— 监听 events，当 agent 使用一个安全 shell 来执行命令到一个目标系统。 minion —— 这个就是 agent，能够可选的安装在目标并使用 python 来推送命令。 grains —— 提供关于目标系统的信息到 minon。 pillars —— 配置文件。     Salt 使用 Jinja2 模板引擎来插入条件语句和实现其它设置在 Salt state 和 pillar 文件中。 如何使用 Salt Stack   Salt Stack 分为开源和企业版。企业版包括一个 GUI 并提供一个轻量的目录访问协议（访问控制）。企业版的 API 比开源版本的 API 拥有更多的特性。同时，企业版也增强了合规性检测能力，包括存储事件到数据库来提供一个审计日志。     如果是开源版本，主要是使用命令行来进行相关的操作。","mainEntityOfPage":{"@type":"WebPage","@id":"https://fuzhibo.site/salt/stack,python,it/infrastructure/2019/12/20/what-is-salt-stack.html"},"@type":"BlogPosting","url":"https://fuzhibo.site/salt/stack,python,it/infrastructure/2019/12/20/what-is-salt-stack.html","headline":"IT 设施基础工具系列 1 —— Salt Stack 的介绍","datePublished":"2019-12-20T10:40:29+08:00","dateModified":"2019-12-20T10:40:29+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://fuzhibo.site/feed.xml" title="A tossing programmer" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">A tossing programmer</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">IT 设施基础工具系列 1 —— Salt Stack 的介绍</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-12-20T10:40:29+08:00" itemprop="datePublished">Dec 20, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>  IT 基础设施的建设中，管理工具是非常重要的一环。而针对裸金属设施来说，最常用的管理工具之一莫过于 <code class="highlighter-rouge">Salt Stack</code>。</p>
+<h4 id="什么是-salt-stack">什么是 Salt Stack</h4>
+<p>  <code class="highlighter-rouge">Salt Stack</code> 是一个配置管理和编排工具。它使用一个中心化的仓库来提供新的服务器和其它 <code class="highlighter-rouge">IT 基础设施</code>以及自动化<code class="highlighter-rouge">重复的系统管理</code>工作和<code class="highlighter-rouge">代码部署</code>任务。<br />
+ <br />
+  <code class="highlighter-rouge">Salt Stack</code> 的核心组件，是一个远程执行引擎，创建一个安全的、双向的以及高速的通信网络。当一个 master 运行的时候，一个启动的 minion 会创建加密哈希并且连接到 master。再使用公钥认证后，minion 可从 master 接收命令。Salt 也可以运行在一个无 master 的 minion 模式。</p>
+<h4 id="为什么是-salt-stack">为什么是 Salt Stack</h4>
+<p>  <code class="highlighter-rouge">Salt Stack</code> 可被用于 <code class="highlighter-rouge">DevOps</code> 组织，使用它从中心代码仓库拉取开发者代码和配置信息，然后推送这些内容到远程服务器。Salt 的用户也可以二次开发 <code class="highlighter-rouge">Salt Stack</code> 同时也能够下载到其它用户已经贡献到公共仓库的 <code class="highlighter-rouge">prebuilt configurations</code>。  <br />
+ <br />
+  <code class="highlighter-rouge">Salt Stack</code> 区别于其它的配置管理和自动化工具的一点就是<code class="highlighter-rouge">速度</code>（官方自己的宣传）。它使用多线程的设计架构，能同时执行成千上百个任务。在分布式集群通信上使用 <code class="highlighter-rouge">ZeroMQ</code> 消息中间件，有效的解耦的了网络连接，意味着整个系统的运转不要求持久化的连接。  <br />
+ <br />
+  <code class="highlighter-rouge">Salt Stack</code> 使用 <code class="highlighter-rouge">slave-master</code> 架构，并且在里面实现了<code class="highlighter-rouge">推</code>和<code class="highlighter-rouge">拉</code>的操作。这是一个基于<code class="highlighter-rouge">消息驱动</code>的架构，同时带有<code class="highlighter-rouge">自愈</code>的特性。当然，Salt 也可以工作在 <code class="highlighter-rouge">agent-based</code> 或者 <code class="highlighter-rouge">agentless</code> 模式。<br />
+ <br />
+  <code class="highlighter-rouge">Salt Stack</code> 由 4 个部分组成：</p>
+<ul>
+  <li>reactors —— 监听 events，当 agent 使用一个安全 shell 来执行命令到一个目标系统。</li>
+  <li>minion —— 这个就是 agent，能够可选的安装在目标并使用 python 来推送命令。</li>
+  <li>grains —— 提供关于目标系统的信息到 minon。</li>
+  <li>pillars —— 配置文件。<br />
+ <br />
+  Salt 使用 Jinja2 模板引擎来插入条件语句和实现其它设置在 Salt state 和 pillar 文件中。
+    <h4 id="如何使用-salt-stack">如何使用 Salt Stack</h4>
+    <p>  <code class="highlighter-rouge">Salt Stack</code> 分为<code class="highlighter-rouge">开源</code>和<code class="highlighter-rouge">企业</code>版。企业版包括一个 GUI 并提供一个轻量的目录访问协议（访问控制）。企业版的 API 比开源版本的 API 拥有更多的特性。同时，企业版也增强了合规性检测能力，包括存储事件到数据库来提供一个审计日志。<br />
+ <br />
+  如果是开源版本，主要是使用命令行来进行相关的操作。</p>
+  </li>
+</ul>
+
+  </div><a class="u-url" href="/salt/stack,python,it/infrastructure/2019/12/20/what-is-salt-stack.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">A tossing programmer</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">A tossing programmer</li><li><a class="u-email" href="mailto:fuzhibo@tom.com">fuzhibo@tom.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/fuzhibo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">fuzhibo</span></a></li><li><a href="https://www.twitter.com/fuzhibo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">fuzhibo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>This blog documented my learing trajectory.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

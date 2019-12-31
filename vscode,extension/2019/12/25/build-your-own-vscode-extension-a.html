@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>构建自己的 VS Code Extension 的实践总结（一） | A tossing programmer</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="构建自己的 VS Code Extension 的实践总结（一）" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="  这次实践的目的主要是完成如下几个特性： 能够让插件可以在 vs code 的 setting 页面中进行配置，目前可以只支持 GitLab URL 和 Token 的配置。 增加一个 precheck 的命令，可以对配置的 GitLab URL 和 Token 进行校验。" />
+<meta property="og:description" content="  这次实践的目的主要是完成如下几个特性： 能够让插件可以在 vs code 的 setting 页面中进行配置，目前可以只支持 GitLab URL 和 Token 的配置。 增加一个 precheck 的命令，可以对配置的 GitLab URL 和 Token 进行校验。" />
+<link rel="canonical" href="https://fuzhibo.site/vscode,extension/2019/12/25/build-your-own-vscode-extension-a.html" />
+<meta property="og:url" content="https://fuzhibo.site/vscode,extension/2019/12/25/build-your-own-vscode-extension-a.html" />
+<meta property="og:site_name" content="A tossing programmer" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-12-25T13:10:29+08:00" />
+<script type="application/ld+json">
+{"description":"  这次实践的目的主要是完成如下几个特性： 能够让插件可以在 vs code 的 setting 页面中进行配置，目前可以只支持 GitLab URL 和 Token 的配置。 增加一个 precheck 的命令，可以对配置的 GitLab URL 和 Token 进行校验。","mainEntityOfPage":{"@type":"WebPage","@id":"https://fuzhibo.site/vscode,extension/2019/12/25/build-your-own-vscode-extension-a.html"},"@type":"BlogPosting","url":"https://fuzhibo.site/vscode,extension/2019/12/25/build-your-own-vscode-extension-a.html","headline":"构建自己的 VS Code Extension 的实践总结（一）","datePublished":"2019-12-25T13:10:29+08:00","dateModified":"2019-12-25T13:10:29+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://fuzhibo.site/feed.xml" title="A tossing programmer" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">A tossing programmer</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">构建自己的 VS Code Extension 的实践总结（一）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-12-25T13:10:29+08:00" itemprop="datePublished">Dec 25, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>  这次实践的目的主要是完成如下几个特性：</p>
+<ul>
+  <li>能够让插件可以在 vs code 的 setting 页面中进行配置，目前可以只支持 GitLab URL 和 Token 的配置。</li>
+  <li>增加一个 precheck 的命令，可以对配置的 GitLab URL 和 Token 进行校验。</li>
+</ul>
+
+<h4 id="新增自定义的命令映射">新增自定义的命令映射</h4>
+<p>  在基本的开发环境搭建好后，现在至少已经可以启动调试并通过控制台命令触发一个 <code class="highlighter-rouge">Hello World</code> 的消息通知。那么在这个基础上修改一个自己的命令并不难。直接修改 <code class="highlighter-rouge">package.json</code> 下的 <code class="highlighter-rouge">contributes.commands</code> 部分增加一个自己定义的命令 <code class="highlighter-rouge">gldevops.precheck</code>。</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="err">/*.......*/</span><span class="w">
+    </span><span class="nl">"contributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+		</span><span class="nl">"commands"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+			</span><span class="p">{</span><span class="w">
+				</span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gldevops.precheck"</span><span class="p">,</span><span class="w">
+				</span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GitLab DevOps Management: Begin to do precheck."</span><span class="w">
+			</span><span class="p">}</span><span class="w">
+        </span><span class="p">]</span><span class="w">
+        </span><span class="err">/*.......*/</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="err">/*.......*/</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+<p>  同时修改的还有 <code class="highlighter-rouge">activationEvents</code> 列表。</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="err">/*.......*/</span><span class="w">
+    </span><span class="nl">"activationEvents"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="s2">"onCommand:gldevops.precheck"</span><span class="w">
+        </span><span class="err">/*.......*/</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+    </span><span class="err">/*.......*/</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+<p>  配置修改完成后，对应到代码层面上的更改主要是使用 <code class="highlighter-rouge">vscode.commands.registerCommand</code> 方法注册指定的函数为 <code class="highlighter-rouge">gldevops.precheck</code>。这样才能建立上映射。</p>
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">disposable</span> <span class="o">=</span> <span class="nx">vscode</span><span class="p">.</span><span class="nx">commands</span><span class="p">.</span><span class="nx">registerCommand</span><span class="p">(</span><span class="dl">'</span><span class="s1">gldevops.precheck</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="cm">/*Your code here*/</span><span class="p">});</span>
+<span class="nx">context</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">disposable</span><span class="p">);</span>
+</code></pre></div></div>
+<h4 id="从-vs-code-的-setting-页面中读取自己的配置">从 vs code 的 setting 页面中读取自己的配置</h4>
+<p>  首先，还是从 <code class="highlighter-rouge">package.json</code> 入手，通过配置可以让 vs code 自动识别并生成相关的配置选项到 setting 页面之中。</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="err">/*.......*/</span><span class="w">
+    </span><span class="nl">"configuration"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GitLab DevOps Management"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"gitlabDevopsMgt.instanceUrl"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w">
+                </span><span class="nl">"default"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://gitlab.com"</span><span class="p">,</span><span class="w">
+                </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Your GitLab instance URL (default is https://gitlab.com)"</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="nl">"gitlabDevopsMgt.personalAccessToken"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w">
+                </span><span class="nl">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+                </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Your GitLab Personal Access Token"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="err">/*.......*/</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+<p>  在代码中获取相关的配置，并使用。</p>
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">gitlabUrl</span> <span class="o">=</span> <span class="nx">vscode</span><span class="p">.</span><span class="nx">workspace</span><span class="p">.</span><span class="nx">getConfiguration</span><span class="p">(</span><span class="dl">'</span><span class="s1">gitlabDevopsMgt</span><span class="dl">'</span><span class="p">).</span><span class="nx">instanceUrl</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="dl">'</span><span class="s1">http[s]*://[^/]+</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">gitlabToken</span> <span class="o">=</span> <span class="nx">vscode</span><span class="p">.</span><span class="nx">workspace</span><span class="p">.</span><span class="nx">getConfiguration</span><span class="p">(</span><span class="dl">'</span><span class="s1">gitlabDevopsMgt</span><span class="dl">'</span><span class="p">).</span><span class="nx">personalAccessToken</span><span class="p">;</span>
+</code></pre></div></div>
+<h4 id="校验填写的-gitlab-url-和-token">校验填写的 GitLab URL 和 Token</h4>
+<p>  获取到指定的 URL 和 Token 后，需要对它们进行校验。校验方法这里使用获取 GitLab 服务器版本信息的办法，通过 <code class="highlighter-rouge">/api/v4/version</code> 来获取到版本信息进行验证。<br />
+ <br />
+  这里需要用到一个 HTTP 请求连接的库，这里用 needle 来作为 backend。在 <code class="highlighter-rouge">package.json</code> 中需要增加对 <code class="highlighter-rouge">needle</code> 库的引用。</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"devDependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">/*.......*/</span><span class="w">
+    </span><span class="nl">"@types/needle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^2.4.0"</span><span class="p">,</span><span class="w">
+    </span><span class="err">/*.......*/</span><span class="w">
+    </span><span class="nl">"needle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^2.4.0"</span><span class="w">
+    </span><span class="err">/*.......*/</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+<p>  在代码层面，实现一个模块封装 HTTP 相关操作。</p>
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">needle</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">needle</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="c1">// The module 'requests' implementation a HTTP request operator class</span>
+<span class="k">export</span> <span class="nx">namespace</span> <span class="nx">HttpClient</span> <span class="p">{</span>
+    <span class="k">export</span> <span class="kd">class</span> <span class="nx">Requests</span> <span class="p">{</span>
+
+        <span class="kd">constructor</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Requests initialize...</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// do some implementation</span>
+        <span class="kr">public</span> <span class="kd">get</span><span class="p">(</span><span class="nx">url</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">options</span><span class="p">:</span> <span class="nx">any</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Begin to do GET request for </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">url</span> <span class="o">+</span> <span class="dl">"</span><span class="s2"> ...</span><span class="dl">"</span><span class="p">);</span>
+            <span class="kd">var</span> <span class="nx">resp</span> <span class="o">=</span> <span class="nx">needle</span><span class="p">(</span><span class="dl">'</span><span class="s1">get</span><span class="dl">'</span><span class="p">,</span> <span class="nx">url</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">resp</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kr">public</span> <span class="nx">post</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Begin to do POST request...</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="kr">public</span> <span class="nx">put</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Begin to do PUT request...</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="kr">public</span> <span class="k">delete</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Begin to do DELETE request...</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>  对于自己开发的模块，可以增加一个单元测试，这样可以有效的提高模块的稳定性。</p>
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">vscode</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">vscode</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">assert</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">assert</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">requests</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../../requests</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="nx">suite</span><span class="p">(</span><span class="dl">'</span><span class="s1">Requests Class Test Suite</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">vscode</span><span class="p">.</span><span class="nb">window</span><span class="p">.</span><span class="nx">showInformationMessage</span><span class="p">(</span><span class="dl">'</span><span class="s1">Start Requests test...</span><span class="dl">'</span><span class="p">);</span>
+
+    <span class="nx">test</span><span class="p">(</span><span class="dl">'</span><span class="s1">GET request test</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="c1">// do get request test</span>
+        <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">open_timeout</span><span class="p">:</span> <span class="mi">20000</span><span class="p">,</span>
+            <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
+                <span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">application/json</span><span class="dl">'</span><span class="p">,</span>
+                <span class="dl">'</span><span class="s1">PRIVATE-TOKEN</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">AXUiDDXJrK19HfqypV7x</span><span class="dl">'</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+        <span class="kd">var</span> <span class="nx">req</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">requests</span><span class="p">.</span><span class="nx">HttpClient</span><span class="p">.</span><span class="nx">Requests</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">res</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://gitlab.com/api/v4/version</span><span class="dl">'</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+        <span class="nx">assert</span><span class="p">.</span><span class="nx">notEqual</span><span class="p">(</span><span class="nx">res</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">);</span>
+        <span class="nx">res</span><span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">resp</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">notEqual</span><span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">notEqual</span><span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">);</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">notEqual</span><span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">version</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">);</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">notEqual</span><span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">revision</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">);</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Status code: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">);</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">GitLab version: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">version</span><span class="p">);</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">GitLab revision: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">revision</span><span class="p">);</span>
+        <span class="p">});</span>
+        <span class="nx">res</span><span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">err</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">);</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Get Error: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">err</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+
+    <span class="nx">test</span><span class="p">(</span><span class="dl">'</span><span class="s1">POST request test</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="c1">// do post request test</span>
+        <span class="kd">var</span> <span class="nx">req</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">requests</span><span class="p">.</span><span class="nx">HttpClient</span><span class="p">.</span><span class="nx">Requests</span><span class="p">;</span>
+        <span class="nx">req</span><span class="p">.</span><span class="nx">post</span><span class="p">();</span>
+    <span class="p">});</span>
+
+    <span class="nx">test</span><span class="p">(</span><span class="dl">'</span><span class="s1">PUT request test</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="c1">// do put request test</span>
+        <span class="kd">var</span> <span class="nx">req</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">requests</span><span class="p">.</span><span class="nx">HttpClient</span><span class="p">.</span><span class="nx">Requests</span><span class="p">;</span>
+        <span class="nx">req</span><span class="p">.</span><span class="nx">put</span><span class="p">();</span>
+    <span class="p">});</span>
+
+    <span class="nx">test</span><span class="p">(</span><span class="dl">'</span><span class="s1">DELETE request test</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="c1">// do delete request test</span>
+        <span class="kd">var</span> <span class="nx">req</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">requests</span><span class="p">.</span><span class="nx">HttpClient</span><span class="p">.</span><span class="nx">Requests</span><span class="p">;</span>
+        <span class="nx">req</span><span class="p">.</span><span class="k">delete</span><span class="p">();</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div></div>
+<h4 id="总结">总结</h4>
+<p>  这一阶段的代码可以看<a href="https://github.com/fuzhibo/gitlab-devops-management/tree/lesson1">这里</a>。这个阶段，已经完成了 vs code extension 本身的搭建和对接 GitLab API 的初步实现。那么下一阶段，需要完成的任务有：</p>
+<ul>
+  <li>在 vs code 的左侧边栏上增加一个属于这个插件自己的 Logo，当用户点击这个 Logo 的时候进行 GitLab 的初始化校验并弹出一个工作面板。</li>
+  <li>对这个 Token 所能够显示的 Group 和 Project 用 Tree List 空间进行展示（最好和 vs code 风格统一），并标明权限。</li>
+</ul>
+
+  </div><a class="u-url" href="/vscode,extension/2019/12/25/build-your-own-vscode-extension-a.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">A tossing programmer</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">A tossing programmer</li><li><a class="u-email" href="mailto:fuzhibo@tom.com">fuzhibo@tom.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/fuzhibo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">fuzhibo</span></a></li><li><a href="https://www.twitter.com/fuzhibo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">fuzhibo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>This blog documented my learing trajectory.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

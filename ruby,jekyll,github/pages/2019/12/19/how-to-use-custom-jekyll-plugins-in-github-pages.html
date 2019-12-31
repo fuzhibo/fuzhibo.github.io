@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>如何在 github pages 中使用定制的插件 | A tossing programmer</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="如何在 github pages 中使用定制的插件" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="  在写博客的过程中，需要为自己的文章增加一些流程图的展示。首先想到的就是常用的 mermaid 图形库，可惜这个在 jekyll 中并没有直接支持，大部分的解决办法是使用 jekyll-mermaid 这个 jekyll plugins 来解决问题。不过这个这个插件安装了后使用并没有取得相应的效果。通过对代码的阅读，发现原因在于 jekyll 进行模板的分析过程中将这部分代码编程了彻底的文本模式导致的。于是只需要在某段文本的下面直接回车一行这样就可以起一个新行来添加自己的流程图代码块。类似这样： {% mermaid %} graph TD; A--&gt;B; A--&gt;C; B--&gt;D; C--&gt;D; {% endmermaid %}   结果会生成这样的一个流程图：" />
+<meta property="og:description" content="  在写博客的过程中，需要为自己的文章增加一些流程图的展示。首先想到的就是常用的 mermaid 图形库，可惜这个在 jekyll 中并没有直接支持，大部分的解决办法是使用 jekyll-mermaid 这个 jekyll plugins 来解决问题。不过这个这个插件安装了后使用并没有取得相应的效果。通过对代码的阅读，发现原因在于 jekyll 进行模板的分析过程中将这部分代码编程了彻底的文本模式导致的。于是只需要在某段文本的下面直接回车一行这样就可以起一个新行来添加自己的流程图代码块。类似这样： {% mermaid %} graph TD; A--&gt;B; A--&gt;C; B--&gt;D; C--&gt;D; {% endmermaid %}   结果会生成这样的一个流程图：" />
+<link rel="canonical" href="https://fuzhibo.site/ruby,jekyll,github/pages/2019/12/19/how-to-use-custom-jekyll-plugins-in-github-pages.html" />
+<meta property="og:url" content="https://fuzhibo.site/ruby,jekyll,github/pages/2019/12/19/how-to-use-custom-jekyll-plugins-in-github-pages.html" />
+<meta property="og:site_name" content="A tossing programmer" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-12-19T14:18:29+08:00" />
+<script type="application/ld+json">
+{"description":"  在写博客的过程中，需要为自己的文章增加一些流程图的展示。首先想到的就是常用的 mermaid 图形库，可惜这个在 jekyll 中并没有直接支持，大部分的解决办法是使用 jekyll-mermaid 这个 jekyll plugins 来解决问题。不过这个这个插件安装了后使用并没有取得相应的效果。通过对代码的阅读，发现原因在于 jekyll 进行模板的分析过程中将这部分代码编程了彻底的文本模式导致的。于是只需要在某段文本的下面直接回车一行这样就可以起一个新行来添加自己的流程图代码块。类似这样： {% mermaid %} graph TD; A--&gt;B; A--&gt;C; B--&gt;D; C--&gt;D; {% endmermaid %}   结果会生成这样的一个流程图：","mainEntityOfPage":{"@type":"WebPage","@id":"https://fuzhibo.site/ruby,jekyll,github/pages/2019/12/19/how-to-use-custom-jekyll-plugins-in-github-pages.html"},"@type":"BlogPosting","url":"https://fuzhibo.site/ruby,jekyll,github/pages/2019/12/19/how-to-use-custom-jekyll-plugins-in-github-pages.html","headline":"如何在 github pages 中使用定制的插件","datePublished":"2019-12-19T14:18:29+08:00","dateModified":"2019-12-19T14:18:29+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://fuzhibo.site/feed.xml" title="A tossing programmer" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">A tossing programmer</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">如何在 github pages 中使用定制的插件</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-12-19T14:18:29+08:00" itemprop="datePublished">Dec 19, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>  在写博客的过程中，需要为自己的文章增加一些流程图的展示。首先想到的就是常用的 <code class="highlighter-rouge">mermaid</code> 图形库，可惜这个在 jekyll 中并没有直接支持，大部分的解决办法是使用 <code class="highlighter-rouge">jekyll-mermaid</code> 这个 <code class="highlighter-rouge">jekyll plugins</code> 来解决问题。不过这个这个插件安装了后使用并没有取得相应的效果。通过对代码的阅读，发现原因在于 <code class="highlighter-rouge">jekyll</code> 进行模板的分析过程中将这部分代码编程了彻底的文本模式导致的。于是只需要在某段文本的下面直接回车一行这样就可以起一个新行来添加自己的流程图代码块。类似这样：</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">
+{% mermaid %}
+</span><span class="gp">graph TD;</span><span class="w">
+</span><span class="gp">    A--&gt;</span>B<span class="p">;</span>
+<span class="gp">    A--&gt;</span>C<span class="p">;</span>
+<span class="gp">    B--&gt;</span>D<span class="p">;</span>
+<span class="gp">    C--&gt;</span>D<span class="p">;</span>
+<span class="go">{% endmermaid %}
+
+</span></code></pre></div></div>
+<p>  结果会生成这样的一个流程图：</p>
+
+<script src="https://unpkg.com/mermaid@8.4.4/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+<div class="mermaid">
+graph TD;
+    A--&gt;B;
+    A--&gt;C;
+    B--&gt;D;
+    C--&gt;D;
+</div>
+
+<p>  接下来的操作就是将这个改动提交到 <code class="highlighter-rouge">github pages</code> 上，但是问题在于 <code class="highlighter-rouge">github</code> 出于安全考虑，不允许在 <code class="highlighter-rouge">github pages</code> 的构建过程中引入自己定制的 <code class="highlighter-rouge">jekyll plugins</code>，但是这并没有阻止个人上传静态的 html 页面，所以只需要提前构建好然后将构建结果放在 master 分支下就可以规避这个问题。<br />
+ <br />
+  具体的过程可以参考这个<a href="https://www.cnblogs.com/ihardcoder/p/4479356.html">教程</a>。不过这个方法的麻烦之处在于每次修改都只能在 dev 分支然后修改完成后还需要进行一系列操作合并到 master 分支解决问题。<br />
+ <br />
+  不过这个插件过于简单，还需要用到 <code class="highlighter-rouge">Liquid</code> 的标记语法，在 <a href="https://help.github.com/en/github/working-with-github-pages/troubleshooting-jekyll-build-errors-for-github-pages-sites#unknown-tag-error">Unknown tag error</a> 中的的如下解释似乎给彻底解决这个问题带来了希望：</p>
+<blockquote>
+  <p>This error means that your code contains an unrecognized Liquid tag.</p>
+
+  <p>To troubleshoot, make sure all Liquid tags in the file in the error message match Jekyll’s default variables and there are no typos in the tag names. For a list of default varibles, see “Variables” in the Jekyll documentation.</p>
+
+  <p>Unsupported plugins are a common source of unrecognized tags. If you use an unsupported plugin in your site by generating your site locally and pushing your static files to GitHub, <code class="highlighter-rouge">make sure the plugin is not introducing tags that are not in Jekyll's default variables</code>. For a list of supported plugins, see “About GitHub Pages and Jekyll.”</p>
+</blockquote>
+
+<p>  那么不使用 <code class="highlighter-rouge">Tag</code> 进行标记，通过解析自定义的格式，是不是就可以解决了呢？比如类似 <code class="highlighter-rouge">gitlab</code> 下的 <strong>markdown</strong> 语法：</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">      ```mermaid
+</span><span class="gp">      graph TD;</span><span class="w">
+</span><span class="gp">           A--&gt;</span>B<span class="p">;</span>
+<span class="gp">           A--&gt;</span>C<span class="p">;</span>
+<span class="gp">           B--&gt;</span>D<span class="p">;</span>
+<span class="gp">           C--&gt;</span>D<span class="p">;</span>
+<span class="go">      ```
+</span></code></pre></div></div>
+<p>  要实现这样的小目标，就得从自己开发一个 <code class="highlighter-rouge">jekyll plugins</code> 开始。先将 <code class="highlighter-rouge">jekyll-mermaid</code> 插件的基本功能放到自己的新插件中实现，再逐步的完善达到最终想要的结果。<br />
+ <br />
+  创建一个新的插件 <a href="https://github.com/fuzhibo/jekyll-mermaid-diagrams.git">jekyll-mermaid-diagrams</a>，其实这个插件实现也简单，最核心的代码就这么一段：</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Jekyll</span>
+  <span class="k">module</span> <span class="nn">Mermaid</span>
+    <span class="k">module</span> <span class="nn">Diagrams</span>
+      <span class="k">class</span> <span class="nc">Error</span> <span class="o">&lt;</span> <span class="no">StandardError</span><span class="p">;</span> <span class="k">end</span>
+      <span class="c1"># Your code goes here...</span>
+      <span class="k">class</span> <span class="nc">MermaidChart</span> <span class="o">&lt;</span> <span class="no">Liquid</span><span class="o">::</span><span class="no">Block</span>
+
+        <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">markup</span><span class="p">,</span> <span class="n">tokens</span><span class="p">)</span>
+          <span class="k">super</span>
+        <span class="k">end</span>
+
+        <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+          <span class="vi">@config</span> <span class="o">=</span> <span class="n">context</span><span class="p">.</span><span class="nf">registers</span><span class="p">[</span><span class="ss">:site</span><span class="p">].</span><span class="nf">config</span><span class="p">[</span><span class="s1">'mermaid'</span><span class="p">]</span>
+          <span class="s2">"&lt;script src=</span><span class="se">\"</span><span class="si">#{</span><span class="vi">@config</span><span class="p">[</span><span class="s1">'src'</span><span class="p">]</span><span class="si">}</span><span class="se">\"</span><span class="s2">&gt;&lt;/script&gt;"</span><span class="p">\</span>
+          <span class="s2">"&lt;script&gt;mermaid.initialize({startOnLoad:true});&lt;/script&gt;"</span><span class="p">\</span>
+          <span class="s2">"&lt;div class=</span><span class="se">\"</span><span class="s2">mermaid</span><span class="se">\"</span><span class="s2">&gt;</span><span class="si">#{</span><span class="k">super</span><span class="si">}</span><span class="s2">&lt;/div&gt;"</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+<span class="no">Liquid</span><span class="o">::</span><span class="no">Template</span><span class="p">.</span><span class="nf">register_tag</span><span class="p">(</span><span class="s1">'mermaid'</span><span class="p">,</span> <span class="no">Jekyll</span><span class="o">::</span><span class="no">Mermaid</span><span class="o">::</span><span class="no">Diagrams</span><span class="o">::</span><span class="no">MermaidChart</span><span class="p">)</span>
+</code></pre></div></div>
+<p>  可以看到，这段代码的作用就是继承了 <code class="highlighter-rouge">Liquid::Block</code> 这个类并实现了自己的 <code class="highlighter-rouge">render</code> 方法。不过这里要吐槽一下 bundler 生成的 gem 框架，它默认将包名中的 <code class="highlighter-rouge">'-' </code> 分割的字符串视为 <code class="highlighter-rouge">lib</code> 下的一个目录分级，这样的话会导致引入包的时候会有路径问题；同时，在自己代码实现的文件里也不要引入 <code class="highlighter-rouge">jekyll</code> 之类的包，而在 <code class="highlighter-rouge">test</code> 目录下引入，因为这个本来就是一个插件，当置于 <code class="highlighter-rouge">jekyll</code> 环境后会自动的解决相关的依赖。</p>
+
+  </div><a class="u-url" href="/ruby,jekyll,github/pages/2019/12/19/how-to-use-custom-jekyll-plugins-in-github-pages.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">A tossing programmer</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">A tossing programmer</li><li><a class="u-email" href="mailto:fuzhibo@tom.com">fuzhibo@tom.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/fuzhibo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">fuzhibo</span></a></li><li><a href="https://www.twitter.com/fuzhibo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">fuzhibo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>This blog documented my learing trajectory.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
